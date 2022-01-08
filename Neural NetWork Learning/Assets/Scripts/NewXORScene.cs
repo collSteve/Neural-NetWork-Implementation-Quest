@@ -16,9 +16,12 @@ public class NewXORScene : MonoBehaviour
     // ([(l1, n1), (l2, n2)]) -> o : returns weight objects represent the weight from n1 node in l1 layer to n2 node in l2 layer
     private Dictionary<Tuple<Tuple<int,int>, Tuple<int, int>>, GameObject> weightGOs;
 
+    [SerializeField]
     private GameObject nodeObject;
 
     private Func<float, Color> ColorRuler;
+    private Coroutine trainCoroutine;
+    private bool trainCoroutineRunning = false;
 
     // displays UI
     Texture2D XORTexture;
@@ -29,7 +32,8 @@ public class NewXORScene : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        nodeObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        // nodeObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+
         nodeObject.SetActive(false);
 
         ColorRuler = (v)=> DisplayerHelper.ColorRulerRedGreen(v);
@@ -40,11 +44,11 @@ public class NewXORScene : MonoBehaviour
         XORImage.texture = XORTexture;
         percentageTextUI.text = "NaN";
 
-        int[] sampleLayerSize = new int[] { 2, 2, 1 };
+        int[] sampleLayerSize = new int[] { 2, 4, 4, 4, 1 };
         neuralNet = new BabyNeuralNetwork(sampleLayerSize, Math.Sigmoid, Math.SigmoidDiff, Math.SquareError, Math.SquareErrorDiff);
 
 
-        InitialDisplayNeuralNet(neuralNet, new Vector2(-8, 5), new Vector2(8, -5), 1, out nodeGOs, out weightGOs, nodeObject, ColorRuler);
+        InitialDisplayNeuralNet(neuralNet, new Vector2(-8f, 2.5f), new Vector2(4, -4f), 1, out nodeGOs, out weightGOs, nodeObject, ColorRuler);
 
         Tuple<double[], double[]>[] sampleTrainingSetBase = new Tuple<double[], double[]>[] {
             new Tuple<double[], double[]>(new double[2]{0, 0}, new double[1]{ 1}),
@@ -72,7 +76,7 @@ public class NewXORScene : MonoBehaviour
             new System.Tuple<double[], double[]>(new double[2]{1, 1}, new double[1]{ 1}),
         };
 
-        Coroutine a = StartCoroutine(TrainNeuralNet(sampleTrainingSet, sampleTestSet, times, waitSeconds: 0.0001f, false));
+        trainCoroutine = StartCoroutine(TrainNeuralNet(sampleTrainingSet, sampleTestSet, times, waitSeconds: 0f, false));
 
         // BackProbTest(neuralNet, sampleTrainingSetBase, 3000);
     }
@@ -93,7 +97,7 @@ public class NewXORScene : MonoBehaviour
         weightGOs = new Dictionary<Tuple<Tuple<int, int>, Tuple<int, int>>, GameObject>();
 
         // - x -- x -- x -  : layerGapX: --
-        float layerGapX = ((lowrightCorner.x - upleftCorner.x) - layerSize.Length * nodeWidth) / layerSize.Length;
+        float layerGapX = ((lowrightCorner.x - upleftCorner.x)) / layerSize.Length;
 
         // position nodes
         for (int i=0; i < layerSize.Length; i++)
@@ -102,7 +106,7 @@ public class NewXORScene : MonoBehaviour
             float x = upleftCorner.x + layerGapX / 2 + layerGapX * i;
 
             // y position for nodes in layer
-            float nodeGapY = ((upleftCorner.y - lowrightCorner.y) - layerSize[i] * nodeWidth) / layerSize[i];
+            float nodeGapY = ((upleftCorner.y - lowrightCorner.y)) / layerSize[i];
             for (int j=0; j < layerSize[i]; j++)
             {
                 float y = lowrightCorner.y + nodeGapY / 2 + nodeGapY * j;
@@ -216,34 +220,42 @@ public class NewXORScene : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (trainCoroutineRunning)
+        {
+            DisplayXORPic(neuralNet, XORTexture, XORTextureSize);
+        }
     }
 
     IEnumerator TrainNeuralNet(System.Tuple<double[], double[]>[] trainSet,
         System.Tuple<double[], double[]>[] testSet,
         int epoch, float waitSeconds = 0.001f, bool randomize = true)
     {
+        trainCoroutineRunning = true;
+
         System.Action<int> StartCallbackFunc = (batch_size) => {
             Debug.Log($"Training Start. Batch size: {batch_size}");
         };
 
         System.Action<int, double> UpdateCallbackFunc = (numEpoch, error) => {
             // Debug.Log($"Epoch [{numEpoch}]  |  Error: {error}");
-            percentageTextUI.text = $"{(double)(numEpoch+1)/epoch * 100}"; 
+            percentageTextUI.text = $"{(double)(numEpoch+1)/epoch * 100}% ({numEpoch}/{epoch})"; 
 
             // update new neural net display
             UpdateWeights(neuralNet, ColorRuler);
             UpdateNodes(neuralNet, ColorRuler);
-            DisplayXORPic(neuralNet, XORTexture, XORTextureSize);
+            // DisplayXORPic(neuralNet, XORTexture, XORTextureSize);
         };
 
         System.Action<double> EndCallbackFunc = (error) => {
             Debug.Log($"Training Ends. Final error: {error}");
+            trainCoroutineRunning = false;
         };
 
         Debug.Log($"Training Set Length: {trainSet.Length}");
         IEnumerator coroutine = neuralNet.IEmuneratorTrain(trainSet, testSet, epoch, 
             StartCallbackFunc, UpdateCallbackFunc, EndCallbackFunc, new WaitForSeconds(waitSeconds), randomize:randomize);
 
+        
         return coroutine;
     }
 
@@ -271,6 +283,10 @@ public class NewXORScene : MonoBehaviour
         }
         DisplayXORPic(net, XORTexture, XORTextureSize);
         Debug.Log("Finished Test");
+    }
+
+    private void OnDrawGizmos()
+    {
     }
 
     #region Helpers
