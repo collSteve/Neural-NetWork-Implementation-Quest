@@ -44,7 +44,7 @@ public class NewXORScene : MonoBehaviour
         XORImage.texture = XORTexture;
         percentageTextUI.text = "NaN";
 
-        int[] sampleLayerSize = new int[] { 2, 4, 4, 4, 1 };
+        int[] sampleLayerSize = new int[] { 2, 4, 1 };
         neuralNet = new BabyNeuralNetwork(sampleLayerSize, Math.Sigmoid, Math.SigmoidDiff, Math.SquareError, Math.SquareErrorDiff);
 
 
