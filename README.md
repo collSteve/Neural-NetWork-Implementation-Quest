@@ -8,6 +8,6 @@ Screen Recording for solving the XOR problem with a 2-4-1 sigmoid model (overfit
 
 https://user-images.githubusercontent.com/46071004/171311225-1cb9760a-a6f1-4a45-a281-e7a17d37d36f.mp4
 
-Screenshot [New XOR Scene] 2-4-1 sigmoid model:
+Another screenshot for solving the XOR problem with 2-4-1 sigmoid model at another instance (notice the variation from the recording):
 
 <img width="500" alt="XOR new" src="https://user-images.githubusercontent.com/46071004/148631412-7febef7b-a49b-4e50-bd60-3a950e80b8d9.PNG">
