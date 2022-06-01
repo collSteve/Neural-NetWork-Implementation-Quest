@@ -4,7 +4,7 @@ This is my self-developed neural network which is developed from scratch by deri
 
 
 ## Current Version
-Screen Recording 2-4-1 sigmoid model:
+Screen Recording for solving the XOR problem with a 2-4-1 sigmoid model (overfitting):
 
 https://user-images.githubusercontent.com/46071004/171311225-1cb9760a-a6f1-4a45-a281-e7a17d37d36f.mp4
 
