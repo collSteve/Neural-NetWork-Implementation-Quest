@@ -1,6 +1,12 @@
 # NeuralNetwork-Learning-Unity
  
-Self implemented neural network and models using c# and display with unity
+This is my self-developed neural network which is developed from scratch by deriving formulas and implementing them in C#. Then I and designed created a UI in Unity and implemented using my neural network to solve some classic machine learning problems such as the XOR problem and digit recognization problem.
+
+
+## Current Version
+Screen Recording 2-4-1 sigmoid model:
+
+https://user-images.githubusercontent.com/46071004/171311225-1cb9760a-a6f1-4a45-a281-e7a17d37d36f.mp4
 
 Screenshot [New XOR Scene] 2-4-1 sigmoid model:
 
