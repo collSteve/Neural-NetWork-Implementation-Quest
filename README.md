@@ -1,4 +1,4 @@
-# NeuralNetwork-Learning-Unity
+# Neural Network Development Unity Project
  
 This is my self-developed neural network which is developed from scratch by deriving formulas and implementing them in C#. Then I and designed created a UI in Unity and implemented using my neural network to solve some classic machine learning problems such as the XOR problem and digit recognization problem.
 
